@@ -1,0 +1,17 @@
+name: Checkout Test
+
+"on":
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  checkout:
+    name: Checkout
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Confirm checkout
+        run: ls
