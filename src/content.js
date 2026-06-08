@@ -62,7 +62,7 @@ export const sprintItems = [
 ];
 
 export const pipelineSteps = [
-  'Push a GitHub',
+  'Push hacia GitHub',
   'Instalar dependencias',
   'Compilar frontend',
   'Construir imagen',
