@@ -1,5 +1,5 @@
 export const appInfo = {
-  name: 'AgileFlow Dev00ps',
+  name: 'AgileFlow Devs',
   tagline: 'Sistema ligero para controlar entregas agiles con evidencia DevOps.',
   summary:
     'Una landing funcional con tablero de sprint, control de calidad y flujo de despliegue pensado para explicar cambios en vivo.',
