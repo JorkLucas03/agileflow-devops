@@ -53,7 +53,7 @@ jobs:
       EB_APPLICATION_NAME: studyflow-api
       EB_ENVIRONMENT_NAME: Studyflow-api-env
       EB_S3_BUCKET: elasticbeanstalk-us-east-2-288834682539
-      VERSION_LABEL: studyflow-api-${{ github.sha }}
+      VERSION_LABEL: studyflow-api-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
