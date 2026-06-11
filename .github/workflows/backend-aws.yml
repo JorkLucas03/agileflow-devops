@@ -49,10 +49,10 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     env:
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      EB_APPLICATION_NAME: ${{ secrets.EB_APPLICATION_NAME }}
-      EB_ENVIRONMENT_NAME: ${{ secrets.EB_ENVIRONMENT_NAME }}
-      EB_S3_BUCKET: ${{ secrets.EB_S3_BUCKET }}
+      AWS_REGION: us-east-2
+      EB_APPLICATION_NAME: studyflow-api
+      EB_ENVIRONMENT_NAME: Studyflow-api-env
+      EB_S3_BUCKET: elasticbeanstalk-us-east-2-288834682539
       VERSION_LABEL: studyflow-api-${{ github.sha }}
     steps:
       - name: Checkout
@@ -65,12 +65,10 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Package backend
-        run: |
-          cd backend
-          zip -r ../backend-deploy.zip . -x "tests/*" "*.pytest_cache*" "__pycache__/*" "*.pyc"
+        run: python backend/package_aws.py
 
       - name: Upload package to S3
-        run: aws s3 cp backend-deploy.zip "s3://${EB_S3_BUCKET}/${VERSION_LABEL}.zip"
+        run: aws s3 cp studyflow-api.zip "s3://${EB_S3_BUCKET}/${VERSION_LABEL}.zip"
 
       - name: Create Elastic Beanstalk application version
         run: |
