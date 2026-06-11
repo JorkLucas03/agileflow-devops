@@ -13,4 +13,5 @@ __pycache__/
 .env
 .env.*
 *.log
+.scannerwork/
 .DS_Store
