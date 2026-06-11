@@ -30,7 +30,7 @@ jobs:
         run: pip install -r backend/requirements-dev.txt
 
       - name: Run backend tests
-        run: python -m pytest backend/tests
+        run: python -m pytest backend/tests --cov=backend/app --cov-report=xml:coverage.xml
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -48,6 +48,6 @@ jobs:
         run: npm run build
 
       - name: SonarQube Cloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

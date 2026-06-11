@@ -180,6 +180,18 @@ function readJsonStorage(key, fallback) {
   }
 }
 
+function sanitizePlanId(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const trimmedValue = value.trim();
+  const isApiPlanId = /^api-\d{1,12}$/.test(trimmedValue);
+  const isLocalPlanId = /^plan-\d{10,16}-[a-f0-9]{4,32}$/.test(trimmedValue);
+
+  return isApiPlanId || isLocalPlanId ? trimmedValue : null;
+}
+
 function makeLocalId() {
   return `plan-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -246,7 +258,9 @@ function App() {
     studyMethods,
   });
   const [savedPlans, setSavedPlans] = useState(() => readJsonStorage(STORAGE_KEYS.plans, []));
-  const [activePlanId, setActivePlanId] = useState(() => localStorage.getItem(STORAGE_KEYS.activePlanId));
+  const [activePlanId, setActivePlanId] = useState(() =>
+    sanitizePlanId(localStorage.getItem(STORAGE_KEYS.activePlanId)),
+  );
   const [apiStatus, setApiStatus] = useState('idle');
   const [apiMessage, setApiMessage] = useState('');
 
@@ -354,8 +368,10 @@ function App() {
   }, [savedPlans]);
 
   useEffect(() => {
-    if (activePlanId) {
-      localStorage.setItem(STORAGE_KEYS.activePlanId, activePlanId);
+    const safeActivePlanId = sanitizePlanId(activePlanId);
+
+    if (safeActivePlanId) {
+      localStorage.setItem(STORAGE_KEYS.activePlanId, safeActivePlanId);
     } else {
       localStorage.removeItem(STORAGE_KEYS.activePlanId);
     }
