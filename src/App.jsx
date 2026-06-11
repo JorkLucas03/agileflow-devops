@@ -6,22 +6,19 @@ import {
   CalendarDays,
   CheckCircle2,
   Clock3,
-  Cloud,
   GraduationCap,
-  Layers3,
   ListChecks,
-  RefreshCw,
-  Server,
+  NotebookPen,
   Sparkles,
   Target,
 } from 'lucide-react';
 import {
-  apiPreview,
   appInfo,
+  checklistItems,
   defaultTopics,
   difficultyOptions,
   focusOptions,
-  subjectTracks,
+  studyMethods,
 } from './content';
 
 const difficultyWeight = {
@@ -63,21 +60,21 @@ function buildStudyPlan(form) {
   const totalHours = daysUntilExam * hoursPerDay;
   const requiredHours = Math.max(6, topics.length * 3.5 * difficultyWeight[form.difficulty]);
   const coverage = Math.min(100, Math.round((totalHours / requiredHours) * 100));
-  const risk = coverage >= 90 ? 'Bajo' : coverage >= 62 ? 'Medio' : 'Alto';
-  const sessions = Math.min(6, Math.max(3, topics.length));
+  const pace = coverage >= 90 ? 'Comodo' : coverage >= 62 ? 'Constante' : 'Intenso';
+  const sessions = Math.min(5, Math.max(3, topics.length));
 
   const dailyPlan = Array.from({ length: sessions }, (_, index) => {
     const topic = topics[index % topics.length] || form.subject;
     const dayNumber = index + 1;
 
     return {
-      day: dayNumber,
-      label: dayNumber === sessions ? 'Cierre' : `Dia ${dayNumber}`,
-      title: dayNumber === sessions ? 'Simulacro y correccion' : topic,
+      label: dayNumber === sessions ? 'Cierre' : `Sesion ${dayNumber}`,
+      title: dayNumber === sessions ? 'Simulacro final' : topic,
+      time: dayNumber === sessions ? `${hoursPerDay} h` : `${Math.max(1, hoursPerDay - 0.5)} h`,
       tasks:
         dayNumber === sessions
-          ? ['Resolver un simulacro corto', 'Revisar errores frecuentes', 'Preparar resumen final']
-          : ['Repasar teoria clave', 'Resolver ejercicios guiados', 'Crear 5 preguntas de autoevaluacion'],
+          ? ['Resolver un simulacro', 'Corregir errores', 'Preparar hoja de formulas o resumen']
+          : ['Repasar conceptos clave', 'Resolver ejercicios', 'Anotar dudas para la siguiente sesion'],
     };
   });
 
@@ -85,9 +82,9 @@ function buildStudyPlan(form) {
     coverage,
     dailyPlan,
     daysUntilExam,
-    risk,
-    totalHours,
+    pace,
     topics,
+    totalHours,
   };
 }
 
@@ -100,22 +97,11 @@ function App() {
     focus: 'Examen parcial',
     topics: defaultTopics.join(', '),
   }));
-  const [activeTopic, setActiveTopic] = useState(defaultTopics[0]);
 
   const plan = useMemo(() => buildStudyPlan(form), [form]);
 
   function updateForm(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
-  }
-
-  function loadTrack(track) {
-    setForm((current) => ({
-      ...current,
-      subject: track.subject,
-      difficulty: track.difficulty,
-      topics: track.topics.join(', '),
-    }));
-    setActiveTopic(track.topics[0]);
   }
 
   return (
@@ -130,8 +116,8 @@ function App() {
           </a>
           <div className="navLinks">
             <a href="#planificador">Planificador</a>
-            <a href="#ruta">Ruta</a>
-            <a href="#arquitectura">Arquitectura</a>
+            <a href="#agenda">Agenda</a>
+            <a href="#checklist">Checklist</a>
           </div>
         </nav>
 
@@ -139,7 +125,7 @@ function App() {
           <div className="heroCopy">
             <span className="eyebrow">
               <Sparkles size={16} aria-hidden="true" />
-              Planes de estudio personalizados
+              Estudia con orden
             </span>
             <h1>{appInfo.name}</h1>
             <p>{appInfo.summary}</p>
@@ -148,9 +134,9 @@ function App() {
                 Crear plan
                 <ArrowRight size={18} aria-hidden="true" />
               </a>
-              <a className="button ghost" href="#arquitectura">
-                <Cloud size={18} aria-hidden="true" />
-                Cloud Run
+              <a className="button ghost" href="#agenda">
+                Ver agenda
+                <CalendarDays size={18} aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -160,11 +146,11 @@ function App() {
               <div>
                 <span className="eyebrow">
                   <BrainCircuit size={16} aria-hidden="true" />
-                  Generador inicial
+                  Planificador
                 </span>
-                <h2>Arma tu proxima semana de estudio</h2>
+                <h2>Prepara tu proximo examen</h2>
               </div>
-              <span className={`riskBadge risk${plan.risk}`}>Riesgo {plan.risk}</span>
+              <span className="paceBadge">{plan.pace}</span>
             </div>
 
             <div className="formGrid">
@@ -235,40 +221,36 @@ function App() {
         </div>
       </section>
 
-      <section className="statsBand" aria-label="Resumen del plan">
-        <div>
-          <CalendarDays size={22} aria-hidden="true" />
-          <strong>{plan.daysUntilExam}</strong>
-          <span>Dias disponibles</span>
-        </div>
-        <div>
-          <Clock3 size={22} aria-hidden="true" />
-          <strong>{plan.totalHours}</strong>
-          <span>Horas estimadas</span>
-        </div>
-        <div>
-          <ListChecks size={22} aria-hidden="true" />
-          <strong>{plan.topics.length}</strong>
-          <span>Temas activos</span>
-        </div>
-        <div>
-          <Target size={22} aria-hidden="true" />
-          <strong>{plan.coverage}%</strong>
-          <span>Cobertura sugerida</span>
-        </div>
-      </section>
+      <section className="section agendaSection" id="agenda">
+        <div className="agendaIntro">
+          <div>
+            <span className="eyebrow">
+              <NotebookPen size={16} aria-hidden="true" />
+              Agenda de estudio
+            </span>
+            <h2>Tu ruta para {form.subject}</h2>
+            <p>
+              Divide tus temas en sesiones cortas, con practica y cierre antes del examen.
+            </p>
+          </div>
 
-      <section className="section routeSection" id="ruta">
-        <div className="sectionHeader">
-          <span className="eyebrow">
-            <Layers3 size={16} aria-hidden="true" />
-            Ruta generada
-          </span>
-          <h2>Un plan claro para empezar sin perder tiempo</h2>
-          <p>
-            Esta version genera la ruta en el frontend. En la siguiente fase, la misma estructura
-            consumira un endpoint FastAPI en AWS.
-          </p>
+          <div className="planSummary" aria-label="Resumen del plan">
+            <div>
+              <CalendarDays size={20} aria-hidden="true" />
+              <strong>{plan.daysUntilExam}</strong>
+              <span>Dias</span>
+            </div>
+            <div>
+              <Clock3 size={20} aria-hidden="true" />
+              <strong>{plan.totalHours}</strong>
+              <span>Horas</span>
+            </div>
+            <div>
+              <Target size={20} aria-hidden="true" />
+              <strong>{plan.coverage}%</strong>
+              <span>Cobertura</span>
+            </div>
+          </div>
         </div>
 
         <div className="routeGrid">
@@ -276,7 +258,7 @@ function App() {
             <article className="routeCard" key={`${item.label}-${item.title}`}>
               <div className="cardTop">
                 <span>{item.label}</span>
-                <CheckCircle2 size={19} aria-hidden="true" />
+                <small>{item.time}</small>
               </div>
               <h3>{item.title}</h3>
               <ul>
@@ -289,81 +271,46 @@ function App() {
         </div>
       </section>
 
-      <section className="section tracksSection">
-        <div className="sectionHeader compact">
+      <section className="section checklistSection" id="checklist">
+        <div className="sectionHeader">
           <span className="eyebrow">
-            <BookOpen size={16} aria-hidden="true" />
-            Materias base
+            <ListChecks size={16} aria-hidden="true" />
+            Antes del examen
           </span>
-          <h2>Cambia de enfoque con un clic</h2>
+          <h2>Checklist para llegar con calma</h2>
+          <p>
+            Usa esta lista para saber si ya tienes teoria, practica y simulacro cubiertos.
+          </p>
         </div>
 
-        <div className="tracksGrid">
-          {subjectTracks.map((track) => (
-            <article className="trackCard" key={track.subject}>
+        <div className="checklistGrid">
+          {checklistItems.map((item) => (
+            <article className="checkCard" key={item.title}>
+              <CheckCircle2 size={20} aria-hidden="true" />
               <div>
-                <span className="trackTag">{track.difficulty}</span>
-                <h3>{track.subject}</h3>
-                <p>{track.description}</p>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
               </div>
-              <button onClick={() => loadTrack(track)} type="button">
-                Usar materia
-                <RefreshCw size={17} aria-hidden="true" />
-              </button>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="section focusSection">
-        <div className="focusLayout">
-          <div>
-            <span className="eyebrow">
-              <Target size={16} aria-hidden="true" />
-              Priorizacion
-            </span>
-            <h2>Detecta donde conviene concentrar energia</h2>
-            <p>
-              StudyFlow separa temas, tiempo disponible y dificultad para explicar por que un plan
-              necesita mas practica, teoria o simulacros.
-            </p>
-          </div>
-
-          <div className="topicList" aria-label="Temas del plan">
-            {plan.topics.map((topic) => (
-              <button
-                className={activeTopic === topic ? 'topic active' : 'topic'}
-                key={topic}
-                onClick={() => setActiveTopic(topic)}
-                type="button"
-              >
-                <span>{topic}</span>
-                <ArrowRight size={17} aria-hidden="true" />
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section architectureSection" id="arquitectura">
-        <div className="sectionHeader">
+      <section className="section methodsSection">
+        <div className="sectionHeader compact">
           <span className="eyebrow">
-            <Server size={16} aria-hidden="true" />
-            Arquitectura preparada
+            <BookOpen size={16} aria-hidden="true" />
+            Tecnicas de estudio
           </span>
-          <h2>Frontend listo para conectar FastAPI</h2>
-          <p>
-            El proyecto conserva el contenedor para Google Cloud Run. Luego el formulario enviara
-            estos datos al backend en AWS sin cambiar la experiencia visual.
-          </p>
+          <h2>Metodos simples para estudiar mejor</h2>
         </div>
 
-        <div className="architectureGrid">
-          {apiPreview.map((item) => (
-            <article className="apiCard" key={item.title}>
-              <span>{item.label}</span>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
+        <div className="methodsGrid">
+          {studyMethods.map((method) => (
+            <article className="methodCard" key={method.title}>
+              <span>{method.label}</span>
+              <h3>{method.title}</h3>
+              <p>{method.description}</p>
             </article>
           ))}
         </div>

@@ -5,17 +5,17 @@
   background: #f6f8f7;
   color: #17211f;
   --ink: #17211f;
-  --muted: #64716f;
-  --line: #dbe5e2;
+  --muted: #65716f;
+  --line: #dce5e2;
   --surface: #ffffff;
-  --surface-soft: #edf6f3;
+  --soft: #eff7f4;
   --teal: #0f8f86;
   --teal-dark: #09635e;
   --navy: #1d2d50;
-  --coral: #ec6a5c;
-  --yellow: #f3bd45;
+  --yellow: #f5c04a;
+  --rose: #f3ddd7;
   --green: #2d9b6c;
-  --shadow: 0 24px 70px rgb(23 33 31 / 13%);
+  --shadow: 0 24px 70px rgb(23 33 31 / 12%);
 }
 
 * {
@@ -55,12 +55,12 @@ main {
 }
 
 .hero {
-  min-height: 92vh;
-  padding: 24px clamp(18px, 4vw, 56px) 70px;
+  min-height: 94vh;
+  padding: 24px clamp(18px, 4vw, 56px) 72px;
   background:
-    linear-gradient(120deg, rgb(255 255 255 / 96%) 0%, rgb(255 255 255 / 80%) 46%, rgb(245 249 248 / 72%) 100%),
-    radial-gradient(circle at 82% 24%, rgb(236 106 92 / 18%), transparent 28%),
-    linear-gradient(135deg, #e7f5f2 0%, #fff7e8 46%, #eef2fb 100%);
+    linear-gradient(120deg, rgb(255 255 255 / 96%) 0%, rgb(255 255 255 / 84%) 48%, rgb(249 251 250 / 74%) 100%),
+    radial-gradient(circle at 82% 30%, rgb(245 192 74 / 22%), transparent 24%),
+    linear-gradient(135deg, #e8f5f2 0%, #fff5ec 48%, #eef2fb 100%);
 }
 
 .nav {
@@ -77,8 +77,7 @@ main {
 .button,
 .navLinks,
 .cardTop,
-.trackCard button,
-.topic {
+.checkCard {
   display: inline-flex;
   align-items: center;
 }
@@ -104,7 +103,7 @@ main {
   padding: 6px;
   border: 1px solid rgb(23 33 31 / 10%);
   border-radius: 8px;
-  background: rgb(255 255 255 / 74%);
+  background: rgb(255 255 255 / 78%);
   backdrop-filter: blur(16px);
 }
 
@@ -118,7 +117,7 @@ main {
 
 .navLinks a:hover {
   color: var(--teal-dark);
-  background: var(--surface-soft);
+  background: var(--soft);
 }
 
 .heroGrid {
@@ -127,7 +126,7 @@ main {
   align-items: center;
   gap: clamp(30px, 5vw, 76px);
   max-width: 1180px;
-  min-height: calc(92vh - 92px);
+  min-height: calc(94vh - 92px);
   margin: 0 auto;
   padding-top: 48px;
 }
@@ -162,7 +161,7 @@ h1 {
 
 h2 {
   margin-bottom: 14px;
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-size: clamp(2rem, 4vw, 3.05rem);
   line-height: 1.04;
   letter-spacing: 0;
 }
@@ -173,12 +172,13 @@ h3 {
 }
 
 .heroCopy p,
+.agendaIntro p,
 .sectionHeader p,
-.focusLayout p,
-.architectureSection p {
+.methodCard p,
+.checkCard p {
   color: var(--muted);
-  font-size: 1.08rem;
-  line-height: 1.7;
+  font-size: 1.05rem;
+  line-height: 1.68;
 }
 
 .heroActions {
@@ -213,7 +213,7 @@ h3 {
   padding: clamp(18px, 3vw, 28px);
   border: 1px solid rgb(23 33 31 / 10%);
   border-radius: 8px;
-  background: rgb(255 255 255 / 88%);
+  background: rgb(255 255 255 / 90%);
   box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
 }
@@ -231,28 +231,15 @@ h3 {
   font-size: clamp(1.65rem, 3vw, 2.25rem);
 }
 
-.riskBadge {
+.paceBadge {
   flex: 0 0 auto;
   min-height: 34px;
   padding: 8px 10px;
   border-radius: 6px;
-  font-size: 0.82rem;
-  font-weight: 900;
-}
-
-.riskBajo {
   color: #12623d;
   background: #dff6e9;
-}
-
-.riskMedio {
-  color: #7d5705;
-  background: #fff0cb;
-}
-
-.riskAlto {
-  color: #9b3a23;
-  background: #ffe2da;
+  font-size: 0.82rem;
+  font-weight: 900;
 }
 
 .formGrid {
@@ -327,78 +314,81 @@ textarea:focus {
   background: var(--navy);
 }
 
-.statsBand {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  max-width: 1180px;
-  margin: -34px auto 0;
-  padding: 0 clamp(18px, 4vw, 0px);
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: 0 18px 60px rgb(23 33 31 / 9%);
-}
-
-.statsBand div {
-  display: grid;
-  gap: 5px;
-  min-height: 118px;
-  padding: 22px;
-  background: white;
-}
-
-.statsBand svg {
-  color: var(--teal);
-}
-
-.statsBand strong {
-  font-size: 2rem;
-  line-height: 1;
-}
-
-.statsBand span {
-  color: var(--muted);
-  font-weight: 800;
-}
-
 .section {
   max-width: 1180px;
   margin: 0 auto;
   padding: 86px clamp(18px, 4vw, 0px) 0;
 }
 
-.sectionHeader {
-  max-width: 760px;
+.agendaSection {
+  padding-top: 76px;
+}
+
+.agendaIntro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+  gap: 32px;
+  align-items: end;
   margin-bottom: 30px;
 }
 
-.sectionHeader.compact {
-  margin-bottom: 22px;
+.agendaIntro > div:first-child,
+.sectionHeader {
+  max-width: 760px;
+}
+
+.planSummary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.planSummary div {
+  display: grid;
+  gap: 5px;
+  min-height: 106px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+}
+
+.planSummary svg {
+  color: var(--teal);
+}
+
+.planSummary strong {
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.planSummary span {
+  color: var(--muted);
+  font-weight: 800;
 }
 
 .routeGrid,
-.tracksGrid,
-.architectureGrid {
+.checklistGrid,
+.methodsGrid {
   display: grid;
   gap: 16px;
 }
 
 .routeGrid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .routeCard,
-.trackCard,
-.apiCard {
+.checkCard,
+.methodCard {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: white;
 }
 
 .routeCard {
-  min-height: 240px;
-  padding: 20px;
+  min-height: 260px;
+  padding: 18px;
 }
 
 .cardTop {
@@ -408,21 +398,21 @@ textarea:focus {
 }
 
 .cardTop span,
-.trackTag,
-.apiCard span {
+.methodCard span {
   display: inline-flex;
   align-items: center;
   min-height: 28px;
   padding: 0 9px;
   border-radius: 6px;
   color: var(--teal-dark);
-  background: var(--surface-soft);
+  background: var(--soft);
   font-size: 0.78rem;
   font-weight: 900;
 }
 
-.cardTop svg {
-  color: var(--green);
+.cardTop small {
+  color: var(--muted);
+  font-weight: 900;
 }
 
 .routeCard ul {
@@ -434,105 +424,82 @@ textarea:focus {
   line-height: 1.55;
 }
 
-.tracksSection {
-  padding-top: 70px;
-}
-
-.tracksGrid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.trackCard {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 28px;
-  min-height: 250px;
-  padding: 20px;
-}
-
-.trackCard p,
-.apiCard p {
-  margin-bottom: 0;
-  color: var(--muted);
-  line-height: 1.58;
-}
-
-.trackCard button {
-  justify-content: center;
-  gap: 8px;
-  min-height: 42px;
-  border-radius: 8px;
-  color: white;
-  background: var(--teal);
-  font-weight: 900;
-}
-
-.focusSection {
+.checklistSection {
   max-width: none;
   margin-top: 86px;
   padding: 86px clamp(18px, 4vw, 56px);
-  color: white;
   background: #17211f;
+  color: white;
 }
 
-.focusLayout {
-  display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(360px, 1fr);
-  gap: 42px;
-  align-items: center;
+.checklistSection .sectionHeader,
+.checklistGrid {
   max-width: 1180px;
-  margin: 0 auto;
+  margin-right: auto;
+  margin-left: auto;
 }
 
-.focusLayout p {
+.checklistSection p {
   color: #bdcbc8;
 }
 
-.topicList {
-  display: grid;
-  gap: 10px;
+.checklistGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.topic {
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 58px;
-  padding: 0 16px;
-  border: 1px solid rgb(255 255 255 / 14%);
-  border-radius: 8px;
-  color: #d9e5e2;
+.checkCard {
+  gap: 14px;
+  align-items: flex-start;
+  min-height: 170px;
+  padding: 20px;
+  border-color: rgb(255 255 255 / 14%);
   background: rgb(255 255 255 / 7%);
-  text-align: left;
-  font-weight: 900;
 }
 
-.topic.active {
-  color: var(--ink);
-  border-color: var(--yellow);
-  background: var(--yellow);
+.checkCard svg {
+  flex: 0 0 auto;
+  color: var(--yellow);
 }
 
-.architectureSection {
+.checkCard p {
+  margin-bottom: 0;
+  color: #bdcbc8;
+}
+
+.methodsSection {
   padding-bottom: 86px;
 }
 
-.architectureGrid {
+.sectionHeader.compact {
+  margin-bottom: 22px;
+}
+
+.methodsGrid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.apiCard {
+.methodCard {
   min-height: 210px;
   padding: 20px;
 }
 
-.apiCard span {
+.methodCard span {
   margin-bottom: 28px;
   color: #8a4a16;
   background: #fff0cb;
 }
 
-@media (max-width: 980px) {
+.methodCard p {
+  margin-bottom: 0;
+}
+
+@media (max-width: 1080px) {
+  .routeGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
   .hero {
     min-height: auto;
   }
@@ -548,14 +515,12 @@ textarea:focus {
   }
 
   .heroGrid,
-  .focusLayout {
+  .agendaIntro {
     grid-template-columns: 1fr;
   }
 
-  .statsBand,
-  .routeGrid,
-  .tracksGrid,
-  .architectureGrid {
+  .checklistGrid,
+  .methodsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -581,9 +546,10 @@ textarea:focus {
   }
 
   .heroCopy p,
+  .agendaIntro p,
   .sectionHeader p,
-  .focusLayout p,
-  .architectureSection p {
+  .methodCard p,
+  .checkCard p {
     font-size: 1rem;
     line-height: 1.6;
   }
@@ -598,17 +564,16 @@ textarea:focus {
   }
 
   .formGrid,
-  .statsBand,
+  .planSummary,
   .routeGrid,
-  .tracksGrid,
-  .architectureGrid {
+  .checklistGrid,
+  .methodsGrid {
     grid-template-columns: 1fr;
   }
 
-  .statsBand div,
   .routeCard,
-  .trackCard,
-  .apiCard {
+  .checkCard,
+  .methodCard {
     min-height: auto;
   }
 }

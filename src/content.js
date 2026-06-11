@@ -2,7 +2,7 @@ export const appInfo = {
   name: 'StudyFlow',
   tagline: 'Planificador de estudio personalizado para estudiantes.',
   summary:
-    'Organiza materias, fechas de examen, horas disponibles y temas pendientes en una ruta de estudio clara y defendible.',
+    'Crea una agenda clara para preparar examenes, ordenar temas pendientes y estudiar con sesiones faciles de seguir.',
 };
 
 export const defaultTopics = ['Limites', 'Derivadas', 'Integrales', 'Aplicaciones'];
@@ -11,41 +11,39 @@ export const difficultyOptions = ['Baja', 'Media', 'Alta'];
 
 export const focusOptions = ['Examen parcial', 'Final acumulativo', 'Recuperacion'];
 
-export const subjectTracks = [
+export const checklistItems = [
   {
-    subject: 'Matematicas',
-    difficulty: 'Media',
-    description: 'Ideal para organizar teoria, practica y simulacros antes de un examen numerico.',
-    topics: ['Limites', 'Derivadas', 'Integrales', 'Aplicaciones'],
+    title: 'Resumen principal',
+    description: 'Condensa formulas, conceptos y pasos que siempre debes recordar.',
   },
   {
-    subject: 'Programacion',
-    difficulty: 'Alta',
-    description: 'Divide conceptos, ejercicios y mini retos para preparar pruebas tecnicas o proyectos.',
-    topics: ['Funciones', 'Arrays', 'Objetos', 'APIs', 'Errores comunes'],
+    title: 'Practica guiada',
+    description: 'Resuelve ejercicios por tema antes de mezclar todo en un simulacro.',
   },
   {
-    subject: 'Base de datos',
-    difficulty: 'Media',
-    description: 'Ordena teoria relacional, consultas SQL, normalizacion y ejercicios practicos.',
-    topics: ['Modelo relacional', 'SQL SELECT', 'Joins', 'Normalizacion'],
+    title: 'Dudas pendientes',
+    description: 'Separa lo que no entiendes para repasarlo con tiempo o pedir ayuda.',
+  },
+  {
+    title: 'Simulacro final',
+    description: 'Ensaya con tiempo limitado y corrige errores antes del dia del examen.',
   },
 ];
 
-export const apiPreview = [
+export const studyMethods = [
   {
-    label: 'Google Cloud Run',
-    title: 'Frontend contenedorizado',
-    description: 'La interfaz de StudyFlow mantiene Docker, Nginx y puerto 8080 para desplegarse como servicio web.',
+    label: '25 min',
+    title: 'Pomodoro',
+    description: 'Estudia en bloques cortos, descansa y vuelve con una meta concreta.',
   },
   {
-    label: 'AWS + FastAPI',
-    title: 'Backend de planes',
-    description: 'El proximo endpoint recibira materia, temas y tiempo disponible para devolver un plan JSON.',
+    label: 'Activo',
+    title: 'Preguntas propias',
+    description: 'Convierte cada tema en preguntas para comprobar si realmente lo entendiste.',
   },
   {
-    label: 'REST',
-    title: 'Contrato simple',
-    description: 'La pantalla queda lista para consumir POST /api/study-plan cuando el backend este publicado.',
+    label: 'Repaso',
+    title: 'Errores frecuentes',
+    description: 'Guarda los fallos que repites y revisalos antes de pasar al siguiente tema.',
   },
 ];
