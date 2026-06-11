@@ -1,17 +1,20 @@
 # StudyFlow
 
-Frontend para un planificador de estudio personalizado. La app permite ingresar materia, fecha de examen, horas disponibles, dificultad y temas pendientes para generar una ruta inicial de estudio desde la interfaz.
+Frontend React y backend FastAPI para un planificador de estudio personalizado. La app permite ingresar materia, fecha de examen, horas disponibles, dificultad y temas pendientes para generar y guardar una ruta inicial de estudio.
 
 ## Que incluye
 
 - Interfaz responsive construida con React y Vite.
-- Formulario funcional para crear un plan de estudio.
-- Agenda de estudio generada a partir de los temas ingresados.
+- Backend FastAPI con endpoints REST para contenido y planes de estudio.
+- Formulario funcional conectado a la API para crear y actualizar un plan de estudio.
+- Agenda de estudio generada por el backend a partir de los temas ingresados.
 - Resumen del plan con dias, horas y cobertura estimada.
 - Checklist de repaso antes del examen.
 - Tecnicas de estudio para orientar la preparacion.
 - Tema claro para estudiar en la manana y tema oscuro para estudiar en la noche.
 - Dockerfile listo para Cloud Run en el puerto `8080`.
+- Persistencia local con SQLite y soporte para PostgreSQL/RDS usando `DATABASE_URL`.
+- Workflow de GitHub Actions para probar y desplegar el backend en AWS Elastic Beanstalk.
 
 ## Ejecutar localmente
 
@@ -21,6 +24,33 @@ npm run dev
 ```
 
 La app queda disponible normalmente en `http://localhost:5173`.
+
+En otra terminal, instala y ejecuta el backend:
+
+```bash
+cd backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements-dev.txt
+cd ..
+npm run dev:api
+```
+
+La API queda disponible en `http://localhost:8000`.
+
+Abre estas rutas para comprobarla:
+
+```text
+http://localhost:8000/health
+http://localhost:8000/docs
+http://localhost:8000/
+```
+
+Si el backend esta en otra URL, crea un archivo `.env.local` para el frontend:
+
+```text
+VITE_API_URL=http://localhost:8000
+```
 
 ## Compilar
 
@@ -32,7 +62,35 @@ npm run build
 
 ```bash
 npm run lint
+npm run test:api
 npm run test:e2e
+```
+
+## API FastAPI
+
+Endpoints principales:
+
+```text
+GET    /health
+GET    /api/content
+POST   /api/study-plans
+GET    /api/study-plans
+GET    /api/study-plans/{id}
+PUT    /api/study-plans/{id}
+DELETE /api/study-plans/{id}
+```
+
+Payload para crear o actualizar un plan:
+
+```json
+{
+  "subject": "Matematicas",
+  "examDate": "2026-06-24",
+  "hoursPerDay": 2,
+  "difficulty": "Media",
+  "focus": "Examen parcial",
+  "topics": "Limites, Derivadas, Integrales"
+}
 ```
 
 ## Contenido editable
@@ -64,51 +122,60 @@ src/styles.css
 Usuario
   |
   v
-Frontend StudyFlow en Google Cloud Run
+Frontend StudyFlow React/Vite
   |
-  | POST /api/study-plan
+  | HTTP con VITE_API_URL
   v
-Backend FastAPI en AWS
+Backend FastAPI en AWS Elastic Beanstalk
+  |
+  v
+PostgreSQL en Amazon RDS
 ```
 
-Por ahora el plan se genera en el frontend para dejar lista la experiencia visual. En la siguiente fase, el formulario puede enviar los mismos datos a un backend FastAPI desplegado en AWS sin cambiar la pantalla principal.
+El frontend y el backend se mantienen separados. En desarrollo el backend usa SQLite; en AWS usa PostgreSQL configurando `DATABASE_URL`.
 
-## Despliegue recomendado en Google Cloud Run
+## Despliegue backend en AWS Elastic Beanstalk
 
-El proyecto esta preparado para desplegarse como contenedor en Cloud Run usando el puerto `8080`.
+El backend esta preparado en `backend/` con:
 
-Para esta practica, la forma mas simple y estable es desplegar desde Google Cloud Run conectado al repositorio:
+- `requirements.txt`
+- `Procfile`
+- `.ebextensions/01_environment.config`
+- GitHub Actions en `.github/workflows/backend-aws.yml`
 
-1. Ir a Cloud Run.
-2. Crear o editar el servicio `studyflow`.
-3. Elegir despliegue desde repositorio.
-4. Conectar el repositorio de GitHub.
-5. Usar el Dockerfile del proyecto.
-6. Configurar el puerto del contenedor en `8080`.
-7. Desplegar una nueva revision.
-
-Configuracion recomendada:
+Configura estos secretos en GitHub:
 
 ```text
-Nombre del servicio: studyflow
-Puerto del contenedor: 8080
+AWS_REGION
+AWS_ROLE_TO_ASSUME
+EB_APPLICATION_NAME
+EB_ENVIRONMENT_NAME
+EB_S3_BUCKET
 ```
 
-Si quieres probar el contenedor localmente:
+En Elastic Beanstalk configura variables de entorno:
 
-```bash
-docker build -t studyflow-frontend .
-docker run -p 8080:8080 studyflow-frontend
-```
+- `DATABASE_URL`: URL de PostgreSQL/RDS.
+- `CORS_ORIGINS`: dominio del frontend, por ejemplo `https://tu-frontend.com`.
 
 ## Estructura
 
 ```text
 .
 |-- Dockerfile
+|-- .github/
+|   `-- workflows/
+|       `-- backend-aws.yml
+|-- backend/
+|   |-- app/
+|   |-- tests/
+|   |-- Procfile
+|   |-- requirements-dev.txt
+|   `-- requirements.txt
 |-- nginx.conf
 |-- src/
 |   |-- App.jsx
+|   |-- api.js
 |   |-- content.js
 |   |-- main.jsx
 |   `-- styles.css

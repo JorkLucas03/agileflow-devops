@@ -2,6 +2,14 @@ node_modules/
 dist/
 screenshots/
 test-results/
+backend/.pytest_cache/
+backend/.venv/
+backend/**/__pycache__/
+backend/studyflow*.db
+studyflow*.db
+studyflow-api.zip
+.pytest_cache/
+__pycache__/
 .env
 .env.*
 *.log

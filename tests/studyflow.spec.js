@@ -1,6 +1,13 @@
 import { expect, test } from '@playwright/test';
 
 test('muestra StudyFlow y actualiza el plan de estudio', async ({ page }) => {
+  const requests = [];
+  page.on('request', (request) => {
+    if (request.url().includes('/api/study-plans')) {
+      requests.push(request);
+    }
+  });
+
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'StudyFlow' })).toBeVisible();
@@ -15,4 +22,5 @@ test('muestra StudyFlow y actualiza el plan de estudio', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Funciones' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Arrays' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Checklist para llegar con calma' })).toBeVisible();
+  expect(requests.length).toBeGreaterThan(0);
 });

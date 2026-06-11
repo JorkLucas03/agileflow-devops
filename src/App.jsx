@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -22,12 +22,7 @@ import {
   focusOptions,
   studyMethods,
 } from './content';
-
-const difficultyWeight = {
-  Baja: 0.85,
-  Media: 1,
-  Alta: 1.25,
-};
+import { createStudyPlan, fetchContent, updateStudyPlan } from './api';
 
 function addDays(date, days) {
   const next = new Date(date);
@@ -39,56 +34,14 @@ function formatInputDate(date) {
   return date.toISOString().slice(0, 10);
 }
 
-function getDaysUntil(dateValue) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const exam = new Date(`${dateValue}T00:00:00`);
-  const diff = exam.getTime() - today.getTime();
-  return Math.max(1, Math.ceil(diff / 86400000));
-}
-
-function splitTopics(value) {
-  return value
-    .split(',')
-    .map((topic) => topic.trim())
-    .filter(Boolean)
-    .slice(0, 8);
-}
-
-function buildStudyPlan(form) {
-  const topics = splitTopics(form.topics);
-  const daysUntilExam = getDaysUntil(form.examDate);
-  const hoursPerDay = Number(form.hoursPerDay);
-  const totalHours = daysUntilExam * hoursPerDay;
-  const requiredHours = Math.max(6, topics.length * 3.5 * difficultyWeight[form.difficulty]);
-  const coverage = Math.min(100, Math.round((totalHours / requiredHours) * 100));
-  const pace = coverage >= 90 ? 'Comodo' : coverage >= 62 ? 'Constante' : 'Intenso';
-  const sessions = Math.min(5, Math.max(3, topics.length));
-
-  const dailyPlan = Array.from({ length: sessions }, (_, index) => {
-    const topic = topics[index % topics.length] || form.subject;
-    const dayNumber = index + 1;
-
-    return {
-      label: dayNumber === sessions ? 'Cierre' : `Sesion ${dayNumber}`,
-      title: dayNumber === sessions ? 'Simulacro final' : topic,
-      time: dayNumber === sessions ? `${hoursPerDay} h` : `${Math.max(1, hoursPerDay - 0.5)} h`,
-      tasks:
-        dayNumber === sessions
-          ? ['Resolver un simulacro', 'Corregir errores', 'Preparar hoja de formulas o resumen']
-          : ['Repasar conceptos clave', 'Resolver ejercicios', 'Anotar dudas para la siguiente sesion'],
-    };
-  });
-
-  return {
-    coverage,
-    dailyPlan,
-    daysUntilExam,
-    pace,
-    topics,
-    totalHours,
-  };
-}
+const fallbackPlan = {
+  coverage: 0,
+  dailyPlan: [],
+  daysUntilExam: 0,
+  pace: 'Cargando',
+  topics: [],
+  totalHours: 0,
+};
 
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('studyflow-theme') || 'morning');
@@ -100,8 +53,67 @@ function App() {
     focus: 'Examen parcial',
     topics: defaultTopics.join(', '),
   }));
+  const [content, setContent] = useState({
+    appInfo,
+    checklistItems,
+    defaultTopics,
+    difficultyOptions,
+    focusOptions,
+    studyMethods,
+  });
+  const [plan, setPlan] = useState(fallbackPlan);
+  const [planId, setPlanId] = useState(null);
+  const [apiStatus, setApiStatus] = useState('idle');
 
-  const plan = useMemo(() => buildStudyPlan(form), [form]);
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchContent()
+      .then((remoteContent) => {
+        if (isMounted) {
+          setContent(remoteContent);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setApiStatus('error');
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(async () => {
+      setApiStatus('saving');
+      const payload = {
+        ...form,
+        hoursPerDay: Number(form.hoursPerDay),
+      };
+
+      try {
+        const nextPlan = planId
+          ? await updateStudyPlan(planId, payload, { signal: controller.signal })
+          : await createStudyPlan(payload, { signal: controller.signal });
+        setPlan(nextPlan);
+        setPlanId(nextPlan.id);
+        setApiStatus('ready');
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setApiStatus('error');
+        }
+      }
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [form, planId]);
+
   const themeLabel = theme === 'morning' ? 'Noche' : 'Dia';
 
   function updateForm(field, value) {
@@ -121,11 +133,11 @@ function App() {
     <main>
       <section className="hero" id="inicio">
         <nav className="nav" aria-label="Principal">
-          <a className="brand" href="#inicio" aria-label={appInfo.name}>
+          <a className="brand" href="#inicio" aria-label={content.appInfo.name}>
             <span className="brandMark">
               <GraduationCap size={22} aria-hidden="true" />
             </span>
-            {appInfo.name}
+            {content.appInfo.name}
           </a>
           <div className="navControls">
             <div className="navLinks">
@@ -146,8 +158,8 @@ function App() {
               <Sparkles size={16} aria-hidden="true" />
               Estudia con orden
             </span>
-            <h1>{appInfo.name}</h1>
-            <p>{appInfo.summary}</p>
+            <h1>{content.appInfo.name}</h1>
+            <p>{content.appInfo.summary}</p>
             <div className="heroActions">
               <a className="button primary" href="#planificador">
                 Crear plan
@@ -171,6 +183,11 @@ function App() {
               </div>
               <span className="paceBadge">{plan.pace}</span>
             </div>
+            {apiStatus === 'error' && (
+              <p className="apiMessage" role="status">
+                No se pudo conectar con la API. Revisa que FastAPI este activo.
+              </p>
+            )}
 
             <div className="formGrid">
               <label>
@@ -208,7 +225,7 @@ function App() {
                   value={form.difficulty}
                   onChange={(event) => updateForm('difficulty', event.target.value)}
                 >
-                  {difficultyOptions.map((option) => (
+                  {content.difficultyOptions.map((option) => (
                     <option key={option}>{option}</option>
                   ))}
                 </select>
@@ -225,7 +242,7 @@ function App() {
             </label>
 
             <div className="focusGroup" aria-label="Tipo de objetivo">
-              {focusOptions.map((option) => (
+              {content.focusOptions.map((option) => (
                 <button
                   className={form.focus === option ? 'chip active' : 'chip'}
                   key={option}
@@ -313,7 +330,7 @@ function App() {
         </div>
 
         <div className="checklistGrid">
-          {checklistItems.map((item) => (
+          {content.checklistItems.map((item) => (
             <article className="checkCard" key={item.title}>
               <CheckCircle2 size={20} aria-hidden="true" />
               <div>
@@ -335,7 +352,7 @@ function App() {
         </div>
 
         <div className="methodsGrid">
-          {studyMethods.map((method) => (
+          {content.studyMethods.map((method) => (
             <article className="methodCard" key={method.title}>
               <span>{method.label}</span>
               <h3>{method.title}</h3>
