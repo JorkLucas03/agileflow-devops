@@ -143,6 +143,14 @@ El backend esta preparado en `backend/` con:
 - `.ebextensions/01_environment.config`
 - GitHub Actions en `.github/workflows/backend-aws.yml`
 
+Para crear el paquete ZIP desde Windows, usa este script en lugar de `Compress-Archive`:
+
+```bash
+python backend/package_aws.py
+```
+
+Esto genera `studyflow-api.zip` con rutas compatibles con Linux para Elastic Beanstalk.
+
 Configura estos secretos en GitHub:
 
 ```text
