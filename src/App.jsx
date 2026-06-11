@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -26,7 +26,7 @@ import {
   focusOptions,
   studyMethods,
 } from './content';
-import { createStudyPlan, fetchContent, fetchStudyPlans } from './api';
+import { createStudyPlan, deleteStudyPlan, fetchContent, fetchStudyPlans } from './api';
 
 const difficultyWeight = {
   Baja: 0.85,
@@ -276,7 +276,7 @@ function App() {
   const themeLabel = theme === 'morning' ? 'Noche' : 'Dia';
   const activePlanSource = activePlan?.source === 'api' ? 'API' : activePlan ? 'Local' : 'Vista previa';
 
-  const syncLatestApiPlan = useCallback(async ({ showMessage = false } = {}) => {
+  async function syncLatestApiPlan({ showMessage = false } = {}) {
     if (showMessage) {
       setApiStatus('saving');
       setApiMessage('Sincronizando planes desde la API...');
@@ -325,7 +325,7 @@ function App() {
       setApiStatus('error');
       setApiMessage('No se pudo sincronizar con la API en este momento.');
     }
-  }, []);
+  }
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -333,15 +333,6 @@ function App() {
       isMountedRef.current = false;
     };
   }, []);
-
-  useEffect(() => {
-    const initialSyncId = window.setTimeout(() => syncLatestApiPlan(), 0);
-    const intervalId = window.setInterval(() => syncLatestApiPlan(), 4000);
-    return () => {
-      window.clearTimeout(initialSyncId);
-      window.clearInterval(intervalId);
-    };
-  }, [syncLatestApiPlan]);
 
   useEffect(() => {
     let isMounted = true;
@@ -415,11 +406,32 @@ function App() {
     }, 80);
   }
 
-  function removePlan(localId) {
+  async function removePlan(localId) {
+    const planToRemove = savedPlans.find((item) => item.localId === localId);
+    if (!planToRemove) return;
+
+    if (planToRemove.backendId) {
+      setApiStatus('saving');
+      setApiMessage(`Eliminando ${planToRemove.subject} de la API...`);
+
+      try {
+        await deleteStudyPlan(planToRemove.backendId);
+      } catch (error) {
+        if (error.status !== 404) {
+          setApiStatus('error');
+          setApiMessage('No se pudo eliminar el plan de la API. Intentalo de nuevo.');
+          return;
+        }
+      }
+    }
+
+    apiSyncSignatureRef.current = '';
     setSavedPlans((current) => current.filter((item) => item.localId !== localId));
     if (activePlanId === localId) {
       setActivePlanId(null);
     }
+    setApiStatus('ready');
+    setApiMessage(`Plan de ${planToRemove.subject} eliminado.`);
   }
 
   function resetPlanForm() {

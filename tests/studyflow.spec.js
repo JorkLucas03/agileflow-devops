@@ -73,10 +73,22 @@ test('muestra en el frontend un plan creado directamente en la API', async ({ pa
 
   await page.goto('/');
 
+  await expect(page.getByText(`Plan de ${subject} sincronizado desde la API.`)).toHaveCount(0);
+  await expect(page.locator('.savedPlan').filter({ hasText: subject })).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Sincronizar API' }).click();
   await expect(page.getByText(`Plan de ${subject} sincronizado desde la API.`)).toBeVisible({
     timeout: 8000,
   });
   await expect(page.locator('.savedPlan').filter({ hasText: subject })).toBeVisible();
   await expect(page.getByRole('heading', { name: `Tu ruta para ${subject}` })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Vectores' })).toBeVisible();
+
+  await page.getByRole('button', { name: `Eliminar ${subject}` }).click();
+  await expect(page.getByText(`Plan de ${subject} eliminado.`)).toBeVisible();
+  await expect(page.locator('.savedPlan').filter({ hasText: subject })).toHaveCount(0);
+
+  await page.reload();
+  await page.getByRole('button', { name: 'Sincronizar API' }).click();
+  await expect(page.locator('.savedPlan').filter({ hasText: subject })).toHaveCount(0);
 });

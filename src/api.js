@@ -124,6 +124,13 @@ export function fetchStudyPlans(options = {}) {
   return apiRequest('/api/study-plans', options);
 }
 
+export function deleteStudyPlan(id, options = {}) {
+  return apiRequest(`/api/study-plans/${id}`, {
+    ...options,
+    method: 'DELETE',
+  });
+}
+
 export function updateStudyPlan(id, payload, options = {}) {
   return apiRequest(`/api/study-plans/${id}`, {
     ...options,
