@@ -2,12 +2,14 @@
   color-scheme: light;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #f6f8f7;
-  color: #17211f;
+  background: var(--page);
+  color: var(--ink);
+  --page: #f6f8f7;
   --ink: #17211f;
   --muted: #65716f;
   --line: #dce5e2;
   --surface: #ffffff;
+  --surface-alpha: rgb(255 255 255 / 90%);
   --soft: #eff7f4;
   --teal: #0f8f86;
   --teal-dark: #09635e;
@@ -15,7 +17,43 @@
   --yellow: #f5c04a;
   --rose: #f3ddd7;
   --green: #2d9b6c;
+  --input-bg: #ffffff;
+  --hero-bg:
+    linear-gradient(120deg, rgb(255 255 255 / 96%) 0%, rgb(255 255 255 / 84%) 48%, rgb(249 251 250 / 74%) 100%),
+    radial-gradient(circle at 82% 30%, rgb(245 192 74 / 22%), transparent 24%),
+    linear-gradient(135deg, #e8f5f2 0%, #fff5ec 48%, #eef2fb 100%);
+  --dark-section: #17211f;
+  --dark-card: rgb(255 255 255 / 7%);
+  --dark-line: rgb(255 255 255 / 14%);
+  --dark-muted: #bdcbc8;
   --shadow: 0 24px 70px rgb(23 33 31 / 12%);
+}
+
+:root[data-theme='night'] {
+  color-scheme: dark;
+  --page: #0f1718;
+  --ink: #f4fffc;
+  --muted: #bdd0cc;
+  --line: #273838;
+  --surface: #142121;
+  --surface-alpha: rgb(20 33 33 / 92%);
+  --soft: #203231;
+  --teal: #22b8a8;
+  --teal-dark: #7adbd1;
+  --navy: #f5c04a;
+  --yellow: #f5c04a;
+  --rose: #3b2727;
+  --green: #6bd39b;
+  --input-bg: #0d1819;
+  --hero-bg:
+    linear-gradient(120deg, rgb(15 23 24 / 98%) 0%, rgb(15 23 24 / 90%) 50%, rgb(18 29 31 / 86%) 100%),
+    radial-gradient(circle at 78% 28%, rgb(34 184 168 / 18%), transparent 24%),
+    linear-gradient(135deg, #0f1718 0%, #162222 48%, #121b24 100%);
+  --dark-section: #0b1112;
+  --dark-card: rgb(255 255 255 / 8%);
+  --dark-line: rgb(255 255 255 / 12%);
+  --dark-muted: #aebeba;
+  --shadow: 0 28px 90px rgb(0 0 0 / 36%);
 }
 
 * {
@@ -29,6 +67,10 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  background: var(--page);
+  transition:
+    background 260ms ease,
+    color 260ms ease;
 }
 
 body,
@@ -52,15 +94,14 @@ button {
 
 main {
   overflow: hidden;
+  background: var(--page);
+  transition: background 260ms ease;
 }
 
 .hero {
   min-height: 94vh;
   padding: 24px clamp(18px, 4vw, 56px) 72px;
-  background:
-    linear-gradient(120deg, rgb(255 255 255 / 96%) 0%, rgb(255 255 255 / 84%) 48%, rgb(249 251 250 / 74%) 100%),
-    radial-gradient(circle at 82% 30%, rgb(245 192 74 / 22%), transparent 24%),
-    linear-gradient(135deg, #e8f5f2 0%, #fff5ec 48%, #eef2fb 100%);
+  background: var(--hero-bg);
 }
 
 .nav {
@@ -75,6 +116,7 @@ main {
 .brand,
 .eyebrow,
 .button,
+.navControls,
 .navLinks,
 .cardTop,
 .checkCard {
@@ -98,12 +140,20 @@ main {
   background: var(--navy);
 }
 
+:root[data-theme='night'] .brandMark {
+  color: #101713;
+}
+
+.navControls {
+  gap: 10px;
+}
+
 .navLinks {
   gap: 8px;
   padding: 6px;
-  border: 1px solid rgb(23 33 31 / 10%);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgb(255 255 255 / 78%);
+  background: var(--surface-alpha);
   backdrop-filter: blur(16px);
 }
 
@@ -120,6 +170,30 @@ main {
   background: var(--soft);
 }
 
+.themeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--surface-alpha);
+  font-weight: 900;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.themeToggle:hover {
+  transform: translateY(-2px);
+  border-color: rgb(15 143 134 / 45%);
+  background: var(--soft);
+}
+
 .heroGrid {
   display: grid;
   grid-template-columns: minmax(0, 0.82fr) minmax(470px, 1.18fr);
@@ -133,6 +207,7 @@ main {
 
 .heroCopy {
   max-width: 610px;
+  animation: fadeUp 520ms ease both;
 }
 
 .eyebrow {
@@ -195,6 +270,10 @@ h3 {
   padding: 0 18px;
   border-radius: 8px;
   font-weight: 900;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
 }
 
 .button.primary {
@@ -206,16 +285,27 @@ h3 {
 .button.ghost {
   color: var(--ink);
   border: 1px solid var(--line);
-  background: white;
+  background: var(--surface);
+}
+
+:root[data-theme='night'] .button.ghost,
+:root[data-theme='night'] .themeToggle {
+  color: var(--ink);
+  background: #182727;
+}
+
+.button:hover {
+  transform: translateY(-2px);
 }
 
 .plannerPanel {
   padding: clamp(18px, 3vw, 28px);
-  border: 1px solid rgb(23 33 31 / 10%);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgb(255 255 255 / 90%);
+  background: var(--surface-alpha);
   box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
+  animation: fadeUp 620ms ease 90ms both;
 }
 
 .panelHeader {
@@ -240,6 +330,12 @@ h3 {
   background: #dff6e9;
   font-size: 0.82rem;
   font-weight: 900;
+  animation: pulseBadge 2.8s ease-in-out infinite;
+}
+
+:root[data-theme='night'] .paceBadge {
+  color: #dffff7;
+  background: rgb(34 184 168 / 22%);
 }
 
 .formGrid {
@@ -264,8 +360,20 @@ textarea {
   border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--ink);
-  background: white;
+  background: var(--input-bg);
   outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+:root[data-theme='night'] input,
+:root[data-theme='night'] select,
+:root[data-theme='night'] textarea {
+  color: var(--ink);
+  border-color: #314746;
+  background: #0d1819;
 }
 
 input,
@@ -304,14 +412,66 @@ textarea:focus {
   border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--muted);
-  background: white;
+  background: var(--surface);
   font-weight: 900;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
 }
 
 .chip.active {
   color: white;
   border-color: var(--navy);
   background: var(--navy);
+}
+
+:root[data-theme='night'] .chip.active {
+  color: #101713;
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+}
+
+.plannerFooter {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--soft) 78%, transparent);
+}
+
+.plannerFooter div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
+.plannerFooter strong {
+  color: var(--ink);
+}
+
+.coverageTrack {
+  position: relative;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line) 72%, transparent);
+}
+
+.coverageTrack span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--teal), var(--yellow));
+  animation: loadBar 780ms cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .section {
@@ -322,6 +482,7 @@ textarea:focus {
 
 .agendaSection {
   padding-top: 76px;
+  animation: fadeUp 520ms ease both;
 }
 
 .agendaIntro {
@@ -350,7 +511,17 @@ textarea:focus {
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: white;
+  background: var(--surface);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.planSummary div:hover {
+  transform: translateY(-3px);
+  border-color: rgb(15 143 134 / 38%);
+  box-shadow: 0 16px 34px rgb(23 33 31 / 8%);
 }
 
 .planSummary svg {
@@ -383,12 +554,41 @@ textarea:focus {
 .methodCard {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: white;
+  background: var(--surface);
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
 }
 
 .routeCard {
   min-height: 260px;
   padding: 18px;
+  animation: fadeUp 520ms ease both;
+}
+
+.routeCard:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.routeCard:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.routeCard:nth-child(4) {
+  animation-delay: 210ms;
+}
+
+.routeCard:nth-child(5) {
+  animation-delay: 280ms;
+}
+
+.routeCard:hover,
+.methodCard:hover,
+.checkCard:hover {
+  transform: translateY(-5px);
+  border-color: rgb(15 143 134 / 42%);
+  box-shadow: 0 18px 38px rgb(23 33 31 / 10%);
 }
 
 .cardTop {
@@ -428,7 +628,7 @@ textarea:focus {
   max-width: none;
   margin-top: 86px;
   padding: 86px clamp(18px, 4vw, 56px);
-  background: #17211f;
+  background: var(--dark-section);
   color: white;
 }
 
@@ -440,7 +640,7 @@ textarea:focus {
 }
 
 .checklistSection p {
-  color: #bdcbc8;
+  color: var(--dark-muted);
 }
 
 .checklistGrid {
@@ -452,8 +652,8 @@ textarea:focus {
   align-items: flex-start;
   min-height: 170px;
   padding: 20px;
-  border-color: rgb(255 255 255 / 14%);
-  background: rgb(255 255 255 / 7%);
+  border-color: var(--dark-line);
+  background: var(--dark-card);
 }
 
 .checkCard svg {
@@ -463,7 +663,7 @@ textarea:focus {
 
 .checkCard p {
   margin-bottom: 0;
-  color: #bdcbc8;
+  color: var(--dark-muted);
 }
 
 .methodsSection {
@@ -481,6 +681,7 @@ textarea:focus {
 .methodCard {
   min-height: 210px;
   padding: 20px;
+  animation: fadeUp 520ms ease both;
 }
 
 .methodCard span {
@@ -491,6 +692,52 @@ textarea:focus {
 
 .methodCard p {
   margin-bottom: 0;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseBadge {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes loadBar {
+  from {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  to {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
 }
 
 @media (max-width: 1080px) {
@@ -509,9 +756,17 @@ textarea:focus {
     flex-direction: column;
   }
 
-  .navLinks {
+  .navControls {
     width: 100%;
+  }
+
+  .navLinks {
+    flex: 1 1 auto;
     justify-content: space-between;
+  }
+
+  .themeToggle {
+    flex: 0 0 auto;
   }
 
   .heroGrid,
@@ -538,6 +793,15 @@ textarea:focus {
   .navLinks a {
     padding: 10px 8px;
     font-size: 0.84rem;
+  }
+
+  .navControls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .themeToggle {
+    width: 100%;
   }
 
   h1 {

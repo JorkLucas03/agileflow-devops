@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -8,8 +8,10 @@ import {
   Clock3,
   GraduationCap,
   ListChecks,
+  Moon,
   NotebookPen,
   Sparkles,
+  Sun,
   Target,
 } from 'lucide-react';
 import {
@@ -89,6 +91,7 @@ function buildStudyPlan(form) {
 }
 
 function App() {
+  const [theme, setTheme] = useState(() => localStorage.getItem('studyflow-theme') || 'morning');
   const [form, setForm] = useState(() => ({
     subject: 'Matematicas',
     examDate: formatInputDate(addDays(new Date(), 14)),
@@ -99,10 +102,20 @@ function App() {
   }));
 
   const plan = useMemo(() => buildStudyPlan(form), [form]);
+  const themeLabel = theme === 'morning' ? 'Noche' : 'Manana';
 
   function updateForm(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
   }
+
+  function toggleTheme() {
+    setTheme((current) => (current === 'morning' ? 'night' : 'morning'));
+  }
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem('studyflow-theme', theme);
+  }, [theme]);
 
   return (
     <main>
@@ -114,10 +127,16 @@ function App() {
             </span>
             {appInfo.name}
           </a>
-          <div className="navLinks">
-            <a href="#planificador">Planificador</a>
-            <a href="#agenda">Agenda</a>
-            <a href="#checklist">Checklist</a>
+          <div className="navControls">
+            <div className="navLinks">
+              <a href="#planificador">Planificador</a>
+              <a href="#agenda">Agenda</a>
+              <a href="#checklist">Checklist</a>
+            </div>
+            <button className="themeToggle" onClick={toggleTheme} type="button">
+              {theme === 'morning' ? <Moon size={17} aria-hidden="true" /> : <Sun size={17} aria-hidden="true" />}
+              {themeLabel}
+            </button>
           </div>
         </nav>
 
@@ -216,6 +235,16 @@ function App() {
                   {option}
                 </button>
               ))}
+            </div>
+
+            <div className="plannerFooter">
+              <div>
+                <span>Cobertura estimada</span>
+                <strong>{plan.coverage}%</strong>
+              </div>
+              <div className="coverageTrack" aria-hidden="true">
+                <span style={{ width: `${plan.coverage}%` }} />
+              </div>
             </div>
           </section>
         </div>

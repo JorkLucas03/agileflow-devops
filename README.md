@@ -10,6 +10,7 @@ Frontend para un planificador de estudio personalizado. La app permite ingresar 
 - Resumen del plan con dias, horas y cobertura estimada.
 - Checklist de repaso antes del examen.
 - Tecnicas de estudio para orientar la preparacion.
+- Tema claro para estudiar en la manana y tema oscuro para estudiar en la noche.
 - Dockerfile listo para Cloud Run en el puerto `8080`.
 
 ## Ejecutar localmente
